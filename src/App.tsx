@@ -1,6 +1,8 @@
 import { atom, useAtom, useAtomValue } from './jotai';
 
-const salaryAtom = atom<number>(100_000);
+const salaryAtom = atom(100_000);
+const bonusAtom = atom(10_000);
+const totalSalaryAtom = atom((get) => get(salaryAtom) + get(bonusAtom));
 
 function SalaryDisplay() {
   const salary = useAtomValue<number>(salaryAtom);
@@ -9,11 +11,13 @@ function SalaryDisplay() {
 
 function App() {
   const [salary, setSalary] = useAtom<number>(salaryAtom);
+  const [bonus, setBonus] = useAtom<number>(bonusAtom);
+  const totalSalary = useAtomValue<number>(totalSalaryAtom);
 
   return (
     <>
       <div>
-        <label htmlFor='salary'>Salary </label>
+        <label htmlFor='salary'>Salary</label>
         <input
           type='number'
           id='salary'
@@ -22,7 +26,22 @@ function App() {
         />
       </div>
       <div>{salary}</div>
+
       <SalaryDisplay />
+
+      <div>
+        <label htmlFor='bonus'>Bonus</label>
+        <input
+          type='number'
+          id='bonus'
+          value={bonus}
+          onChange={(e) => setBonus(+e.target.value)}
+        />
+      </div>
+      <div>{bonus}</div>
+
+      <div>Total:</div>
+      <div>{totalSalary}</div>
     </>
   );
 }
