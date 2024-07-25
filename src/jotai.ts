@@ -30,7 +30,20 @@ export function atom<AtomType>(initialValue: AtomType | AtomGetter<AtomType>): A
   }
 
   function computeValue() {
-    value = typeof initialValue === 'function' ? (initialValue as AtomGetter<AtomType>)(get) : value;
+    const newValue = typeof initialValue === 'function' ? (initialValue as AtomGetter<AtomType>)(get) : value;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (newValue && typeof (newValue as any).then === 'function') {
+      // This would show null on the screen for a short while. Not sure how they connected to suspense to show the fallback
+      value = null as AtomType;
+
+      (newValue as unknown as Promise<AtomType>).then((resolvedValue) => {
+        value = resolvedValue;
+        subscribers.forEach((callback) => callback(value));
+      });
+    } else {
+      value = newValue;
+    }
   }
 
   computeValue();
