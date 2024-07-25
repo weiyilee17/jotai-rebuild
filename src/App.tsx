@@ -1,9 +1,9 @@
-import { atom, useAtom } from './jotai';
+import { atom, useAtom, useAtomValue } from './jotai';
 
 const salaryAtom = atom<number>(100_000);
 
 function SalaryDisplay() {
-  const [salary] = useAtom<number>(salaryAtom);
+  const salary = useAtomValue<number>(salaryAtom);
   return <div>{salary}</div>;
 }
 
