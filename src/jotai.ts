@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 
 type Atom<AtomType> = {
   get: () => AtomType;
@@ -28,16 +28,5 @@ export function atom<AtomType>(initialValue: AtomType): Atom<AtomType> {
   };
 }
 export function useAtom<AtomType>(atom: Atom<AtomType>) {
-  const [value, setValue] = useState(atom.get());
-
-  useEffect(() => {
-    // Use setState to trigger rerender
-    const unsubscribe = atom.subscribe(setValue);
-
-    return () => {
-      unsubscribe();
-    };
-  }, [atom]);
-
-  return [value, atom.set];
+  return [useSyncExternalStore(atom.subscribe, atom.get), atom.set];
 }
